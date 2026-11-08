@@ -10,6 +10,10 @@ const swordCount = document.getElementById("sword-count");
 const forgeStatus = document.getElementById("forge-status");
 const forgeImage = document.getElementById("forge-image");
 const actionMessage = document.getElementById("action-message");
+const heatForm = document.getElementById("heat-form");
+const heatInput = document.getElementById("heat-amount");
+const makeSwordButton = document.getElementById("make-sword");
+const resetForgeButton = document.getElementById("reset-forge");
 
 let heat = 20;
 let swordsMade = 0;
@@ -51,7 +55,8 @@ function updateForge() {
 function resetForge() {
   heat = 20;
   swordsMade = 0;
-  actionMessage.textContent = "Welcome to the forge. Add heat to begin.";
+  heatInput.value = "";
+  actionMessage.textContent = "";
   updateForge();
 }
 
@@ -70,9 +75,31 @@ function makeSword() {
     swordsMade = swordsMade + 1;
     actionMessage.textContent = "You made a sword!";
   } else {
-    actionMessage.textContent = "You need more heat to make a sword.";
+    actionMessage.textContent = "You need at least 30 heat to make a sword.";
   }
   updateForge();
 }
+
+// Read and convert the heat input when the player submits the form.
+// If the amount is invalid, show a message and leave the forge alone.
+// Otherwise, pass the amount to the existing heating function.
+heatForm.addEventListener("submit", function (event) {
+  event.preventDefault();
+  const rawAmount = heatInput.value;
+  const amount = Number(rawAmount);
+
+  if (rawAmount.trim() === "" || !Number.isFinite(amount) || !Number.isInteger(amount) || amount < 1) {
+    actionMessage.textContent = "Enter a whole number of 1 or more to add heat.";
+    heatInput.focus();
+  } else {
+    heatForge(amount);
+  }
+});
+
+// Try to craft one sword when the player clicks Make sword.
+makeSwordButton.addEventListener("click", makeSword);
+
+// Restore the starting state and clear the input and log on reset.
+resetForgeButton.addEventListener("click", resetForge);
 
 resetForge();
